@@ -7,10 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Substitua pelo seu token real da OpenWeatherMap aqui:
 const SU_CHAVE_OPENWEATHER = '6be89edcddac14bb39044ee30ae12141';
 
-// Conexão direta com o MySQL do XAMPP (Sem senha por padrão)
 const db = mysql.createPool({
     host: '127.0.0.1',
     user: 'root',
@@ -21,7 +19,6 @@ const db = mysql.createPool({
     queueLimit: 0
 });
 
-// TESTE AUTOMÁTICO DE CONEXÃO COM O BANCO
 db.getConnection((err, connection) => {
     if (err) {
         console.error('\n❌ ERRO AO CONECTAR NO MYSQL:', err.message);
@@ -31,7 +28,6 @@ db.getConnection((err, connection) => {
     }
 });
 
-// 1. ROTA POST: Pesquisa o clima e salva no MySQL
 app.post('/api/pesquisa', async (req, res) => {
     const { cidade } = req.body;
     if (!cidade) return res.status(400).json({ error: 'Cidade é obrigatória.' });
@@ -62,7 +58,6 @@ app.post('/api/pesquisa', async (req, res) => {
     }
 });
 
-// 2. ROTA GET: Busca o histórico
 app.get('/api/historico', (req, res) => {
     db.query('SELECT * FROM historico_pesquisas ORDER BY data_hora DESC', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -70,7 +65,6 @@ app.get('/api/historico', (req, res) => {
     });
 });
 
-// 3. ROTA PUT: Edita um registro
 app.put('/api/historico/:id', (req, res) => {
     const { id } = req.params;
     const { cidade, temperatura, condicao_climatica } = req.body;
@@ -81,7 +75,6 @@ app.put('/api/historico/:id', (req, res) => {
     });
 });
 
-// 4. ROTA DELETE: Excluir registro
 app.delete('/api/historico/:id', (req, res) => {
     const { id } = req.params;
     db.query('DELETE FROM historico_pesquisas WHERE id = ?', [id], (err) => {
